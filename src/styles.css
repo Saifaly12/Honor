@@ -11,3 +11,19 @@
     scrollbar-width: none;
   }
 }
+
+@layer base {
+  :root {
+    color-scheme: light;
+    scrollbar-color: #cbd5e1 transparent;
+  }
+
+  :root.dark {
+    color-scheme: dark;
+    scrollbar-color: #475569 transparent;
+  }
+
+  * {
+    scrollbar-width: inherit;
+  }
+}
