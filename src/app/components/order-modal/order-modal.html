@@ -1,0 +1,449 @@
+<div
+  class="fixed inset-0 z-50 overflow-y-auto bg-black/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4"
+>
+  <div
+    class="relative w-full max-w-2xl bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 rounded-3xl shadow-2xl border border-slate-100 dark:border-slate-800 overflow-hidden my-8"
+  >
+    <!-- الهيدر -->
+    <div class="bg-[#0b131e] text-white p-5 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div
+          class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center font-black text-sm"
+        >
+          H
+        </div>
+        <div>
+          <h3 class="font-extrabold text-base sm:text-lg">
+            طلب شراء رسمي معتمد • ترخيص #HN-8842-DIST
+          </h3>
+          <p class="text-xs text-slate-400">
+            أجهزة جديدة 100% مختومة مصنعياً مع كفالة إقليمية سنتين
+          </p>
+        </div>
+      </div>
+      <button
+        (click)="close()"
+        class="p-1.5 rounded-full bg-white/10 hover:bg-white/20 text-slate-300 hover:text-white transition-colors"
+      >
+        <svg lucideX class="w-5 h-5"></svg>
+      </button>
+    </div>
+
+    @if (orderConfirmed()) {
+      <!-- شاشة النجاح -->
+      <div class="p-6 sm:p-8 text-center">
+        <div
+          class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950/80 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto mb-4"
+        >
+          <svg lucideCircleCheck class="w-10 h-10"></svg>
+        </div>
+
+        <h4 class="text-2xl font-black text-slate-900 dark:text-white mb-2">
+          تم تسجيل طلبك بنجاح!
+        </h4>
+        <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 max-w-md mx-auto mb-6">
+          تم استلام تفاصيل طلبك بنجاح، وسنتواصل معك فوراً لتأكيد التوصيل السريع.
+        </p>
+
+        <div
+          class="bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 text-right mb-6 text-xs sm:text-sm space-y-2"
+        >
+          <div
+            class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60"
+          >
+            <span>رقم الطلب:</span>
+            <span class="font-bold font-sans">{{ orderNumber() }}</span>
+          </div>
+          <div
+            class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60 font-bold"
+          >
+            <span>الجهاز:</span>
+            <span>{{ phone().name }} ({{ selectedColor().name }})</span>
+          </div>
+          <div
+            class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60"
+          >
+            <span>السعة والرام:</span>
+            <span>{{ selectedVariant().storage }} + {{ selectedVariant().ram }}</span>
+          </div>
+          <div
+            class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60"
+          >
+            <span>المستلم:</span>
+            <span>{{ fullName() }} - {{ phoneNumber() }}</span>
+          </div>
+          <div
+            class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60"
+          >
+            <span>وجهة التوصيل:</span>
+            <span>{{ city() }}، {{ address() }}</span>
+          </div>
+          <div
+            class="flex justify-between py-1 border-b border-slate-200/60 dark:border-slate-700/60"
+          >
+            <span>المبلغ المستحق:</span>
+            <span class="font-bold text-base text-slate-900 dark:text-white"
+              >${{ totalPrice() | number }}</span
+            >
+          </div>
+          <div class="flex justify-between py-1 text-emerald-600 dark:text-emerald-400 font-bold">
+            <span>طريقة الدفع:</span>
+            <span>الدفع عند الاستلام مع المعاينة الكاملة</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <button
+            (click)="sendWhatsApp()"
+            class="w-full sm:w-auto flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-6 py-3 rounded-xl text-sm shadow-md transition-all"
+          >
+            <svg lucideMessageSquare class="w-4 h-4"></svg>
+            <span>متابعة الشحن عبر الواتساب فوراً</span>
+          </button>
+          <button
+            (click)="close()"
+            class="w-full sm:w-auto bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold px-6 py-3 rounded-xl text-sm transition-all"
+          >
+            إغلاق والعودة للكتالوج
+          </button>
+        </div>
+      </div>
+    } @else {
+      <!-- الفورم -->
+      <form (ngSubmit)="confirmOrder()" class="p-5 sm:p-7 max-h-[80vh] overflow-y-auto">
+        <!-- ملخص الجهاز -->
+        <div
+          class="flex items-center gap-4 p-3.5 bg-slate-50 dark:bg-slate-800/60 rounded-2xl border border-slate-200/70 dark:border-slate-700/70 mb-5"
+        >
+          <img
+            [src]="phone().image"
+            [alt]="phone().name"
+            class="w-16 h-16 object-contain bg-white dark:bg-slate-800 rounded-xl p-1 border border-slate-200/60 dark:border-slate-700/60"
+          />
+          <div class="flex-1">
+            <div class="flex items-center justify-between">
+              <h4 class="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base">
+                {{ phone().name }}
+              </h4>
+              <span class="font-black text-slate-900 dark:text-white text-base sm:text-lg"
+                >${{ selectedVariant().price }}</span
+              >
+            </div>
+            <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-1">
+              {{ phone().summarySpec }}
+            </p>
+            <div class="flex items-center gap-2 mt-1">
+              <span
+                class="text-[10px] text-emerald-700 dark:text-emerald-300 font-bold bg-emerald-50 dark:bg-emerald-950/70 px-2 py-0.5 rounded border border-emerald-200 dark:border-emerald-800"
+              >
+                كفالة سنتين معتمدة
+              </span>
+              <span
+                class="text-[10px] text-sky-700 dark:text-sky-300 font-bold bg-sky-50 dark:bg-sky-950/70 px-2 py-0.5 rounded border border-sky-200 dark:border-sky-800"
+              >
+                تواصل معنا
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- السعة -->
+        <div class="mb-4">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+            اختر سعة التخزين والذاكرة العشوائية:
+          </label>
+          <div class="grid grid-cols-2 gap-2">
+            @for (v of phone().variants; track v.storage) {
+              <button
+                type="button"
+                (click)="selectedVariant.set(v)"
+                [class]="
+                  'p-2.5 rounded-xl border text-right transition-all flex items-center justify-between ' +
+                  (selectedVariant().storage === v.storage
+                    ? 'border-black dark:border-sky-500 bg-black dark:bg-sky-600 text-white'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-300 dark:hover:border-slate-600')
+                "
+              >
+                <div>
+                  <div class="font-bold text-xs">{{ v.storage }}</div>
+                  <div
+                    [class]="
+                      'text-[10px] ' +
+                      (selectedVariant().storage === v.storage
+                        ? 'text-slate-300'
+                        : 'text-slate-500 dark:text-slate-400')
+                    "
+                  >
+                    ذاكرة {{ v.ram }}
+                  </div>
+                </div>
+                <span class="font-bold text-xs">${{ v.price }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- اللون -->
+        <div class="mb-5">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+            اختر لون الجهاز المفضل:
+          </label>
+          <div class="flex flex-wrap gap-2">
+            @for (c of phone().colors; track c.name) {
+              <button
+                type="button"
+                (click)="selectedColor.set(c)"
+                [class]="
+                  'flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-bold transition-all ' +
+                  (selectedColor().name === c.name
+                    ? 'border-sky-600 dark:border-sky-400 bg-sky-50 dark:bg-sky-950/70 text-sky-900 dark:text-sky-200 ring-2 ring-sky-500/20'
+                    : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:border-slate-300')
+                "
+              >
+                <span
+                  class="w-3.5 h-3.5 rounded-full border border-black/10 shrink-0"
+                  [style.background-color]="c.code"
+                ></span>
+                <span>{{ c.name }}</span>
+              </button>
+            }
+          </div>
+        </div>
+
+        <!-- الكمية -->
+        <div
+          class="flex items-center justify-between py-2 border-y border-slate-100 dark:border-slate-800 mb-5"
+        >
+          <span class="text-xs font-bold text-slate-700 dark:text-slate-300"
+            >عدد الأجهزة المطلوبة:</span
+          >
+          <div class="flex items-center gap-3">
+            <button
+              type="button"
+              (click)="decrease()"
+              class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold flex items-center justify-center text-sm"
+            >
+              -
+            </button>
+            <span class="font-extrabold text-sm w-6 text-center">{{ quantity() }}</span>
+            <button
+              type="button"
+              (click)="increase()"
+              class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 font-bold flex items-center justify-center text-sm"
+            >
+              +
+            </button>
+          </div>
+        </div>
+
+        <!-- بيانات التوصيل -->
+        <div class="space-y-3 mb-5">
+          <h5 class="font-extrabold text-slate-900 dark:text-white text-xs sm:text-sm">
+            بيانات التوصيل والتسليم الفوري
+          </h5>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+                الاسم الكامل للمستلم *
+              </label>
+              <input
+                type="text"
+                name="fullName"
+                [(ngModel)]="fullName"
+                placeholder="مثال: محمود سعد"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-sky-500"
+              />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+                رقم الهاتف / الواتساب للتنسيق *
+              </label>
+              <input
+                type="tel"
+                name="phoneNumber"
+                dir="ltr"
+                [(ngModel)]="phoneNumber"
+                placeholder="+20 10 28535623"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white text-right focus:outline-hidden focus:border-sky-500"
+              />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1"
+                >المدينة</label
+              >
+              <select
+                name="city"
+                [(ngModel)]="city"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-sky-500 font-medium"
+              >
+                <option value="القاهرة">القاهرة (توصيل فوري نفس اليوم)</option>
+                <option value="الجيزة">الجيزة</option>
+                <option value="الإسكندرية">الإسكندرية</option>
+                <option value="المنصورة">المنصورة</option>
+                <option value="طنطا">طنطا</option>
+                <option value="الرياض">الرياض (شحن دولي مؤمن)</option>
+                <option value="جدة">جدة</option>
+                <option value="دبي">دبي</option>
+                <option value="أبوظبي">أبوظبي</option>
+                <option value="الكويت">الكويت</option>
+                <option value="الدوحة">الدوحة</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1">
+                العنوان / الحي والشارع
+              </label>
+              <input
+                type="text"
+                name="address"
+                [(ngModel)]="address"
+                placeholder="مثال: التجمع الخامس، شارع التسعين"
+                class="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-hidden focus:border-sky-500"
+              />
+            </div>
+          </div>
+        </div>
+
+        <!-- طريقة الدفع -->
+        <div class="mb-6">
+          <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
+            طريقة الدفع وضمان المعاينة:
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <label
+              [class]="
+                'cursor-pointer p-3 rounded-xl border flex flex-col justify-between text-xs transition-all ' +
+                (paymentMethod() === 'cod_inspection'
+                  ? 'border-emerald-500 bg-emerald-50/50 dark:bg-emerald-950/40 text-emerald-950 dark:text-emerald-200 font-bold'
+                  : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300')
+              "
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                class="sr-only"
+                [checked]="paymentMethod() === 'cod_inspection'"
+                (change)="paymentMethod.set('cod_inspection')"
+              />
+              <div class="flex items-center gap-1.5 mb-1 text-emerald-600 dark:text-emerald-400">
+                <svg lucideTruck class="w-4 h-4"></svg>
+                <span class="font-black">عند الاستلام + المعاينة</span>
+              </div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">
+                افتح الكرتون وتأكد من الجهاز وحالته قبل السداد للمندوب
+              </span>
+            </label>
+
+            <label
+              [class]="
+                'cursor-pointer p-3 rounded-xl border flex flex-col justify-between text-xs transition-all ' +
+                (paymentMethod() === 'card'
+                  ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/40 text-sky-950 dark:text-sky-200 font-bold'
+                  : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300')
+              "
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                class="sr-only"
+                [checked]="paymentMethod() === 'card'"
+                (change)="paymentMethod.set('card')"
+              />
+              <div class="flex items-center gap-1.5 mb-1 text-sky-600 dark:text-sky-400">
+                <svg lucideCreditCard class="w-4 h-4"></svg>
+                <span class="font-black">فيزا / ماستركارد</span>
+              </div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">
+                سداد مؤمن مع حماية المشتري المعتمدة
+              </span>
+            </label>
+
+            <label
+              [class]="
+                'cursor-pointer p-3 rounded-xl border flex flex-col justify-between text-xs transition-all ' +
+                (paymentMethod() === 'bank_transfer'
+                  ? 'border-sky-500 bg-sky-50/50 dark:bg-sky-950/40 text-sky-950 dark:text-sky-200 font-bold'
+                  : 'border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-slate-300')
+              "
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                class="sr-only"
+                [checked]="paymentMethod() === 'bank_transfer'"
+                (change)="paymentMethod.set('bank_transfer')"
+              />
+              <div class="flex items-center gap-1.5 mb-1 text-slate-700 dark:text-slate-300">
+                <svg lucideBuilding class="w-4 h-4"></svg>
+                <span class="font-black">حساب الموزع البنكي</span>
+              </div>
+              <span class="text-[10px] text-slate-500 dark:text-slate-400">
+                تحويل رسمي مع فاتورة ضريبية رسمية
+              </span>
+            </label>
+          </div>
+        </div>
+
+        <!-- الإجمالي -->
+        <div
+          class="bg-slate-50 dark:bg-slate-800/70 p-4 rounded-2xl border border-slate-200/80 dark:border-slate-700/80 mb-4 flex items-center justify-between"
+        >
+          <div>
+            <span class="text-xs text-slate-500 dark:text-slate-400 block"
+              >الإجمالي النهائي للطلب:</span
+            >
+            <span class="text-2xl font-black text-slate-900 dark:text-white font-sans">
+              ${{ totalPrice() | number }}
+            </span>
+          </div>
+          <div class="text-left text-[11px] text-slate-500 dark:text-slate-400">
+            <span class="block text-emerald-600 dark:text-emerald-400 font-bold"
+              >شحن مجاني مؤمن</span
+            >
+            <span>ضمان سنتين شامل العيوب المصنعية</span>
+          </div>
+        </div>
+
+        <!-- الأزرار -->
+        <div class="flex flex-col sm:flex-row items-center gap-3">
+          <button
+            type="submit"
+            class="w-full sm:flex-1 bg-black hover:bg-slate-800 dark:bg-sky-600 dark:hover:bg-sky-500 text-white font-bold py-3.5 px-4 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md transition-all active:scale-98"
+          >
+            <svg lucideCircleCheck class="w-4 h-4 text-emerald-400"></svg>
+            <span>تأكيد الطلب الفوري وتوثيق الضمان</span>
+          </button>
+
+          <button
+            type="button"
+            (click)="sendWhatsApp()"
+            class="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3.5 px-5 rounded-xl text-sm flex items-center justify-center gap-2 shadow-sm transition-all active:scale-98"
+          >
+            <svg lucideMessageSquare class="w-4 h-4"></svg>
+            <span>تواصل معنا</span>
+          </button>
+
+          <button
+            type="button"
+            (click)="copyOrderText()"
+            class="w-full sm:w-auto p-3.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-sm font-bold flex items-center justify-center gap-1.5 transition-colors"
+            title="نسخ نص الطلب"
+          >
+            @if (copied()) {
+              <svg lucideCheck class="w-4 h-4 text-emerald-600"></svg>
+            } @else {
+              <svg lucideCopy class="w-4 h-4"></svg>
+            }
+            <span class="sm:hidden">نسخ نص الطلب</span>
+          </button>
+        </div>
+      </form>
+    }
+  </div>
+</div>
